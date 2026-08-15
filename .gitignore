@@ -1,0 +1,41 @@
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Security generated reports
+security/reports/*
+security/sbom/*
+security/signatures/*
+security/provenance/*
+security/scans/*
+
+# Keep directory structure
+!security/reports/.gitkeep
+!security/sbom/.gitkeep
+!security/signatures/.gitkeep
+!security/provenance/.gitkeep
+!security/scans/.gitkeep
