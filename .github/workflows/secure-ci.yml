@@ -112,12 +112,18 @@ jobs:
           ignore-unfixed: true
           exit-code: '0'
 
+      - name: Download Trivy HTML template
+        run: |
+          curl -L \
+            -o html.tpl \
+            https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+
       - name: Run Trivy - HTML report
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: secure-supply-chain-demo:${{ github.sha }}
           format: template
-          template: '@/contrib/html.tpl'
+          template: '@html.tpl'
           output: security/reports/trivy-image.html
           severity: CRITICAL,HIGH,MEDIUM,LOW
           ignore-unfixed: true
