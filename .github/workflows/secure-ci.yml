@@ -72,26 +72,70 @@ jobs:
             -t secure-supply-chain-demo:${{ github.sha }} \
             .
   trivy-scan:
-    name: cantainer scan -Trivy
+    name: Container Scan - Trivy
     runs-on: ubuntu-latest
 
     needs:
       - docker-build
+
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: build Docker image 
+
+      - name: Build Docker image
         run: |
           docker build \
             -t secure-supply-chain-demo:${{ github.sha }} \
-            . 
-      
-      - name: Run Trivy vulnerability scanner
+            .
+
+      - name: Create security report directory
+        run: |
+          mkdir -p security/reports
+
+      - name: Run Trivy - JSON report
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: secure-supply-chain-demo:${{ github.sha }}
+          format: json
+          output: security/reports/trivy-image.json
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+          ignore-unfixed: true
+          exit-code: '0'
+
+      - name: Run Trivy - SARIF report
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: secure-supply-chain-demo:${{ github.sha }}
+          format: sarif
+          output: security/reports/trivy-image.sarif
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+          ignore-unfixed: true
+          exit-code: '0'
+
+      - name: Run Trivy - HTML report
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: secure-supply-chain-demo:${{ github.sha }}
+          format: template
+          template: '@/contrib/html.tpl'
+          output: security/reports/trivy-image.html
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+          ignore-unfixed: true
+          exit-code: '0'
+
+      - name: Trivy security gate
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: secure-supply-chain-demo:${{ github.sha }}
           format: table
-          exit-code: '1'
-          ignore-unfixed: true
           severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
+      - name: Upload Trivy reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-reports
+          path: security/reports/
+          retention-days: 30
