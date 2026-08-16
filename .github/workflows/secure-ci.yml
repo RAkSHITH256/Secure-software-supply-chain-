@@ -39,3 +39,23 @@ jobs:
         uses: semgrep/semgrep-action@v1
         with:
           config: auto
+  dependency-scan:
+    name: Dependency Scan - Pip Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install pip-audit --upgrade pip
+          pip install -r app/requirements.txt 
+
+      - name: Run Pip Audit
+        run: pip-audit -r app/requirements.txt  
