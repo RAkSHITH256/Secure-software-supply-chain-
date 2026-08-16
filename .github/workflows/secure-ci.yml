@@ -5,22 +5,22 @@ name: Secure CI
 on:
   push:
     branches:
-       -main
+       - main
   pull_request:
      branches:
-       -main
+       - main
 #permissions-least privilege
-permission:
+permissions:
    contents: read
 
 jobs:
   secret-scan:
      name: Secret Scan - Gitleaks
-     run-on: ubuntu-latest
+     runs-on: ubuntu-latest
 
    steps:
     - name: Checkout repository
-      user: actions/checkout@v4
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 #tells GitHub Actions to fetch the full Git history
