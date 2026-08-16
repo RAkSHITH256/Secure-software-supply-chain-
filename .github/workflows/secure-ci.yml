@@ -58,4 +58,16 @@ jobs:
           pip install -r app/requirements.txt 
 
       - name: Run Pip Audit
-        run: pip-audit -r app/requirements.txt  
+        run: pip-audit -r app/requirements.txt
+  docker-build:
+    name: build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  
+      
+      - name: build Docker Image 
+        run: |
+          docker build \
+            -t secure-supply-chain-demo:${{ github.sha }} \
+            .
