@@ -57,6 +57,6 @@ if __name__ == "__main__":
     logger.info("%s starting on port %s", APP_NAME, PORT)
 
     app.run(
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=PORT
     )
