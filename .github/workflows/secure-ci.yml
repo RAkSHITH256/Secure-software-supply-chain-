@@ -94,6 +94,19 @@ jobs:
             -t secure-supply-chain-demo:${{ github.sha }} \
             .
 
+      - name: Save Docker image
+        run: |
+          docker save \
+            secure-supply-chain-demo:${{ github.sha }} \
+            -o secure-supply-chain-demo.tar
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: secure-supply-chain-demo.tar
+          retention-days: 1
+
 
   # ============================================================
   # 5. TRIVY CONTAINER SECURITY SCAN
@@ -109,11 +122,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Load Docker image
         run: |
-          docker build \
-            -t secure-supply-chain-demo:${{ github.sha }} \
-            .
+          docker load \
+            -i secure-supply-chain-demo.tar
 
       - name: Create security report directory
         run: |
@@ -206,11 +223,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Load Docker image
         run: |
-          docker build \
-            -t secure-supply-chain-demo:${{ github.sha }} \
-            .
+          docker load \
+            -i secure-supply-chain-demo.tar
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0.24.0
