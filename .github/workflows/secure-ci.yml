@@ -284,7 +284,7 @@ jobs:
             secure-supply-chain-demo:${{ github.sha }} \
             ${{ secrets.DOCKERHUB_USERNAME }}/secure-supply-chain-demo:${{ github.sha }}
 
-            - name: Push Docker image
+      - name: Push Docker image
         id: push
         run: |
           IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/secure-supply-chain-demo:${{ github.sha }}"
