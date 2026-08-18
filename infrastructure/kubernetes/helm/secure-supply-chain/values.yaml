@@ -4,12 +4,13 @@ image:
   repository: raks25/secure-supply-chain-demo
   pullPolicy: IfNotPresent
   tag: ""
-  digest: "sha256:56ca5163a6c1924d3caaab6f5c6d2871b5a59015fe3c59cb8e5c8e041b2abf12"
+  digest: "sha256:eb903313716636270033e624e023fb286f24d6cb1e9a4b6c1c52a4b9cdfb53ec"
 
 imagePullSecrets: []
 
 serviceAccount:
   create: true
+  automount: false
   annotations: {}
   name: ""
 
@@ -30,7 +31,7 @@ securityContext:
   capabilities:
     drop:
       - ALL
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
 
 service:
   type: ClusterIP
