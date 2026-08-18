@@ -4,7 +4,7 @@ image:
   repository: raks25/secure-supply-chain-demo
   pullPolicy: IfNotPresent
   tag: ""
-  digest: "sha256:eb903313716636270033e624e023fb286f24d6cb1e9a4b6c1c52a4b9cdfb53ec"
+  digest: "sha256:33306783ea6eaf6713c93084d46f35ca826ff8d3a2fb7de566a1757b21d74365"
 
 imagePullSecrets: []
 
