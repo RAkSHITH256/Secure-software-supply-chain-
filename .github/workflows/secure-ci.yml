@@ -290,6 +290,30 @@ jobs:
           docker push \
             ${{ secrets.DOCKERHUB_USERNAME }}/secure-supply-chain-demo:${{ github.sha }}
   # ============================================================
+  # 8. SLSA BUILD PROVENANCE
+  # ============================================================
+  provenance:
+    name: SLSA Build Provenance
+    runs-on: ubuntu-latest
+
+    needs:
+      - publish-image
+
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Generate build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ secrets.DOCKERHUB_USERNAME }}/secure-supply-chain-demo
+          subject-digest: ${{ needs.publish-image.outputs.digest }}
+          
+  # ============================================================
   # 8. COSIGN IMAGE SIGNING
   # ============================================================
   cosign:
@@ -298,6 +322,7 @@ jobs:
 
     needs:
       - publish-image
+      - provenance
 
     permissions:
       contents: read
