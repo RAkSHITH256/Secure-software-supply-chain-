@@ -39,3 +39,5 @@ security/scans/*
 !security/signatures/.gitkeep
 !security/provenance/.gitkeep
 !security/scans/.gitkeep
+
+About-my-project.md
