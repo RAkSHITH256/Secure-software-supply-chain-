@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-signed-images
+  annotations:
+    policies.kyverno.io/title: Verify Signed Container Images
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Only container images signed by the trusted GitHub Actions workflow
+      are allowed to run.
+spec:
+  background: false
+  validationFailureAction: Enforce
+  webhookConfiguration:
+    timeoutSeconds: 30
+
+  rules:
+    - name: verify-secure-supply-chain-image
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+
+      verifyImages:
+        - imageReferences:
+            - "raks25/secure-supply-chain-demo:*"
+            - "raks25/secure-supply-chain-demo@*"
+
+          required: true
+          mutateDigest: true
+          verifyDigest: true
+
+          attestors:
+            - count: 1
+              entries:
+                - keyless:
+                    subject: "https://github.com/RAkSHITH256/Secure-software-supply-chain-/.github/workflows/secure-ci.yml@refs/heads/main"
+                    issuer: "https://token.actions.githubusercontent.com"
+                    rekor:
+                      url: "https://rekor.sigstore.dev"
