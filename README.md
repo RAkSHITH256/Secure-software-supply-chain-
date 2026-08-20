@@ -1,97 +1,79 @@
-# Secure Software Supply Chain
+#  Secure Software Supply Chain
 
-A security-focused DevSecOps project that demonstrates how to build, scan, verify, sign, attest, and securely deploy a containerized application using a modern software supply-chain security pipeline.
+A production-oriented **DevSecOps and software supply-chain security platform** that secures the software lifecycle from source code to container deployment.
 
-The project integrates automated security checks into GitHub Actions and deploys an immutable, cryptographically signed container image to Kubernetes using Helm.
-
----
-
-## Project Overview
-
-Modern software supply chains can be compromised through vulnerable dependencies, leaked secrets, insecure source code, compromised container images, or tampered artifacts.
-
-This project implements a secure CI/CD workflow that provides multiple layers of protection:
-
-- Static Application Security Testing (SAST)
-- Secret detection
-- Dependency vulnerability scanning
-- Container vulnerability scanning
-- Software Bill of Materials (SBOM)
-- SLSA build provenance
-- Container image signing with Cosign
-- Cryptographic image verification
-- Immutable digest-based Kubernetes deployment
-- Kubernetes security hardening
-- Helm-based deployment
-
-The goal is to ensure that an application is not only built successfully, but that its software artifacts can also be **scanned, traced, verified, and securely deployed**.
+The project implements automated security scanning, dependency analysis, secret detection, container vulnerability scanning, SBOM generation, artifact signing, SLSA build provenance, and Kubernetes admission control using Kyverno.
 
 ---
 
-#  Architecture
+##  Project Overview
+
+Modern applications depend on numerous components:
+
+- Source code
+- Third-party dependencies
+- Container images
+- CI/CD pipelines
+- Build systems
+- Kubernetes deployments
+
+A compromise at any stage of the software supply chain can introduce malicious or vulnerable components into production.
+
+This project addresses that problem by implementing security controls across the complete software delivery lifecycle.
+
+### Security Pipeline
 
 ```text
-                    ┌──────────────────────┐
-                    │   Developer / Git    │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │    GitHub Actions    │
-                    │      Secure CI       │
-                    └──────────┬───────────┘
-                               │
-              ┌────────────────┼────────────────┐
-              │                │                │
-              ▼                ▼                ▼
-         ┌─────────┐      ┌──────────┐    ┌──────────┐
-         │ Semgrep │      │ Gitleaks │    │pip-audit │
-         │  SAST   │      │  Secrets │    │  Deps    │
-         └─────────┘      └──────────┘    └──────────┘
-              │                │                │
-              └────────────────┼────────────────┘
-                               ▼
-                    ┌──────────────────────┐
-                    │   Docker Image Build │
-                    └──────────┬───────────┘
-                               │
-                 ┌─────────────┴─────────────┐
-                 ▼                           ▼
-          ┌────────────┐              ┌────────────┐
-          │   Trivy    │              │    Syft    │
-          │ Container  │              │    SBOM    │
-          │   Scan     │              │ Generation │
-          └────────────┘              └────────────┘
-                 │                           │
-                 └─────────────┬─────────────┘
-                               ▼
-                    ┌──────────────────────┐
-                    │   Docker Registry    │
-                    │     Image Publish    │
-                    └──────────┬───────────┘
-                               │
-                 ┌─────────────┴─────────────┐
-                 ▼                           ▼
-        ┌────────────────┐          ┌────────────────┐
-        │ SLSA Provenance│          │     Cosign     │
-        │    Attestation │          │ Image Signing  │
-        └────────────────┘          └────────────────┘
-                 │                           │
-                 └─────────────┬─────────────┘
-                               ▼
-                    ┌──────────────────────┐
-                    │ Immutable Image      │
-                    │ SHA256 Digest        │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │        Helm          │
-                    │      Deployment      │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │      Kubernetes      │
-                    │       Minikube       │
-                    └──────────────────────┘
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+    │
+    ├── SAST
+    │    └── Semgrep
+    │
+    ├── Secret Scanning
+    │    └── Gitleaks
+    │
+    ├── Dependency Scanning
+    │    └── pip-audit
+    │
+    ├── Container Security
+    │    └── Trivy
+    │
+    ├── SBOM Generation
+    │    └── Syft
+    │
+    ├── Image Publishing
+    │    └── Docker Hub
+    │
+    ├── Build Provenance
+    │    └── SLSA
+    │
+    └── Image Signing
+         └── Cosign
+              │
+              ▼
+        Docker Registry
+              │
+              ▼
+          Kubernetes
+              │
+              ▼
+           Kyverno
+              │
+       ┌──────┴─────────┐
+       │                │
+       ▼                ▼
+ Image Verification   Pod Security
+       │                │
+       │          ├── Non-root
+       │          ├── No privilege escalation
+       │          ├── No privileged containers
+       │          └── Read-only filesystem
+       │
+       ▼
+    Deployment
